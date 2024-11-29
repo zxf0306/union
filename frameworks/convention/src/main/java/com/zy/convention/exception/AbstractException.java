@@ -1,6 +1,7 @@
 package com.zy.convention.exception;
 
 import com.zy.convention.errorcode.IErrorCode;
+import lombok.Getter;
 import org.springframework.util.StringUtils;
 
 import java.rmi.RemoteException;
@@ -12,6 +13,8 @@ import java.util.Optional;
  * @see ServiceException
  * @see RemoteException
  */
+
+@Getter
 public class AbstractException extends RuntimeException{
     public final String errorCode;
 
