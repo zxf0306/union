@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class testController {
+public class TestController {
     @GetMapping("/echo/{name}")
     public String sayHello(@PathVariable("name") String name) {
         return "Hello World " + name;
