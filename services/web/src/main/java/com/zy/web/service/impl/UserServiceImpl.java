@@ -6,6 +6,8 @@ import com.zy.common.toolkit.BeanUtil;
 import com.zy.convention.exception.ClientException;
 import com.zy.web.dao.entity.UserDO;
 import com.zy.web.dao.mapper.UserMapper;
+import com.zy.web.dto.req.UserUpdateReqDTO;
+import com.zy.web.dto.resp.UserQueryActualRespDTO;
 import com.zy.web.dto.resp.UserQueryRespDTO;
 import com.zy.web.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,12 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+
+    @Override
+    public UserQueryRespDTO queryUserByUserId(String userId) {
+        return null;
+    }
+
     @Override
     public UserQueryRespDTO queryUserByUsername(String username) {
         LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
@@ -25,5 +33,20 @@ public class UserServiceImpl implements UserService {
             throw new ClientException("用户不存在，请检查用户名是否正确");
         }
         return BeanUtil.convert(userDO, UserQueryRespDTO.class);
+    }
+
+    @Override
+    public UserQueryActualRespDTO queryActualUserByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public Integer queryUserDeletionNum(Integer idType, String idCard) {
+        return null;
+    }
+
+    @Override
+    public void update(UserUpdateReqDTO requestParam) {
+
     }
 }
