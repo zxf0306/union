@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zy.common.toolkit.BeanUtil;
 import com.zy.convention.exception.ClientException;
 import com.zy.web.dao.entity.UserDO;
+import com.zy.web.dao.entity.UserDeletionDO;
+import com.zy.web.dao.mapper.UserDeletionMapper;
 import com.zy.web.dao.mapper.UserMapper;
 import com.zy.web.dto.req.UserUpdateReqDTO;
 import com.zy.web.dto.resp.UserQueryActualRespDTO;
@@ -13,11 +15,14 @@ import com.zy.web.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
+    private final UserDeletionMapper userDeletionMapper;
 
     @Override
     public UserQueryRespDTO queryUserByUserId(String userId) {
@@ -42,7 +47,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer queryUserDeletionNum(Integer idType, String idCard) {
-        return null;
+        LambdaQueryWrapper<UserDeletionDO> queryWrapper = Wrappers.lambdaQuery(UserDeletionDO.class)
+                .eq(UserDeletionDO::getIdType, idType)
+                .eq(UserDeletionDO::getIdCard, idCard);
+        // TODO 此处应该先查缓存
+        Long deletionCount = userDeletionMapper.selectCount(queryWrapper);
+        return Optional.ofNullable(deletionCount).map(Long::intValue).orElse(0);
     }
 
     @Override
