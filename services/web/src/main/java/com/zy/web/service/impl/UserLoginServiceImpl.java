@@ -52,30 +52,30 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public UserRegisterRespDTO register(UserRegisterReqDTO requestParam) {
-        abstractChainContext.handler(UserChainMarkEnum.USER_REGISTER_FILTER.name(), requestParam);
-        RLock lock = redissonClient.getLock(LOCK_USER_REGISTER + requestParam.getUsername());
-        boolean tryLock = lock.tryLock();
-        if (!tryLock) {
-            throw new ServiceException(HAS_USERNAME_NOTNULL);
-        }
-        try {
-            try {
-                int inserted = userMapper.insert(BeanUtil.convert(requestParam, UserDO.class));
-                if (inserted < 1) {
-                    throw new ServiceException(USER_REGISTER_FAIL);
-                }
-            } catch (DuplicateKeyException dke) {
-                log.error("用户名 [{}] 重复注册", requestParam.getUsername());
+//        abstractChainContext.handler(UserChainMarkEnum.USER_REGISTER_FILTER.name(), requestParam);
+//        RLock lock = redissonClient.getLock(LOCK_USER_REGISTER + requestParam.getUsername());
+//        boolean tryLock = lock.tryLock();
+//        if (!tryLock) {
+//            throw new ServiceException(HAS_USERNAME_NOTNULL);
+//        }
+//        try {
+//            try {
+//                int inserted = userMapper.insert(BeanUtil.convert(requestParam, UserDO.class));
+//                if (inserted < 1) {
+//                    throw new ServiceException(USER_REGISTER_FAIL);
+//                }
+//            } catch (DuplicateKeyException dke) {
+//                log.error("用户名 [{}] 重复注册", requestParam.getUsername());
                 throw new ServiceException(HAS_USERNAME_NOTNULL);
-            }
-            String username = requestParam.getUsername();
+//            }
+//            String username = requestParam.getUsername();
 //            userReuseMapper.delete(Wrappers.update(new UserReuseDO(username)));
 //            StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
 //            instance.opsForSet().remove(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
-        } finally {
-            lock.unlock();
-        }
-        return BeanUtil.convert(requestParam, UserRegisterRespDTO.class);
+//        } finally {
+//            lock.unlock();
+//        }
+//        return BeanUtil.convert(requestParam, UserRegisterRespDTO.class);
     }
 
     @Override

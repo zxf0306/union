@@ -6,7 +6,7 @@ import com.zy.web.dto.resp.UserQueryRespDTO;
 import com.zy.web.dto.resp.UserRegisterRespDTO;
 import com.zy.web.service.UserService;
 import com.zy.web.service.UserLoginService;
-import com.zy.webs.config.Results;
+import com.zy.webs.Results;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;

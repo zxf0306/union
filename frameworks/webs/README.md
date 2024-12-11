@@ -1,0 +1,2 @@
+模块包含全局异常的处理以及解决springboot第一次接口调用时间长的问题。
+WebAutoConfiguration：用于配置自动加载的内容,包括初始化GlobalExceptionHandler和(InitializeDispatcherServletController和InitializeDispatcherServletHandler-解决加载时间过长)。
