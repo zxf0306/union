@@ -1,0 +1,21 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: union-gateway${unique-name:}
+  profiles:
+    # active: aggregation
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 101.43.144.47:8848
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}

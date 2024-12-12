@@ -1,10 +1,8 @@
 server:
-  port: 8080
-
+  port: 8081
 spring:
   application:
-    #配置vm参数：-Dunique-name=-zhangxf，":"不能省略 否则报错。
-    name: web-${unique-name:}
+    name: union-web${unique-name:}
   cloud:
     nacos:
       discovery:
@@ -37,3 +35,4 @@ mybatis-plus:
       logic-not-delete-value: 0
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
