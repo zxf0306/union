@@ -58,6 +58,8 @@ rules:
             shardingAlgorithmName: user_table_hash_mod
       t_user_deletion:
         actualDataNodes: ds_0.t_user_deletion
+      t_user_reuse:
+        actualDataNodes: ds_0.t_user_reuse
     shardingAlgorithms:
       user_database_hash_mod:
         type: CLASS_BASED

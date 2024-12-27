@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-    name: api
+    name: union-api
   cloud:
     nacos:
       discovery:

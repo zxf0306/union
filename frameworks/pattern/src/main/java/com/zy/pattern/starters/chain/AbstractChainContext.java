@@ -25,7 +25,10 @@ public final class AbstractChainContext<T> implements CommandLineRunner {
         }
         abstractChainHandlers.forEach(each -> each.handler(requestParam));
     }
-
+    /**
+     * 将责任链放入责任链组
+     *
+     */
     @Override
     public void run(String... args) throws Exception {
         Map<String, AbstractChainHandler> chainFilterMap = ApplicationContextHolder
