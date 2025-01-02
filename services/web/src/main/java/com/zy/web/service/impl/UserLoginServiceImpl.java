@@ -1,14 +1,11 @@
 package com.zy.web.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.zy.cache.DistributedCache;
-import com.zy.common.toolkit.BeanUtil;
-import com.zy.convention.exception.ClientException;
-import com.zy.convention.exception.ServiceException;
-import com.zy.pattern.starters.chain.AbstractChainContext;
+import com.zy.cache.starter.DistributedCache;
+import com.zy.common.starter.toolkit.BeanUtil;
+import com.zy.convention.starter.exception.ServiceException;
+import com.zy.pattern.starter.chain.AbstractChainContext;
 import com.zy.web.common.enums.UserChainMarkEnum;
 import com.zy.web.dao.entity.*;
 import com.zy.web.dao.mapper.UserMailMapper;
@@ -19,7 +16,6 @@ import com.zy.web.dto.req.UserDeletionReqDTO;
 import com.zy.web.dto.req.UserLoginReqDTO;
 import com.zy.web.dto.req.UserRegisterReqDTO;
 import com.zy.web.dto.resp.UserLoginRespDTO;
-import com.zy.web.dto.resp.UserQueryRespDTO;
 import com.zy.web.dto.resp.UserRegisterRespDTO;
 import com.zy.web.service.UserLoginService;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +27,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static com.zy.web.common.enums.RedisKeyConstant.LOCK_USER_REGISTER;
 import static com.zy.web.common.enums.RedisKeyConstant.USER_REGISTER_REUSE_SHARDING;

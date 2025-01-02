@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.zy.base.starters.constants.UserConstant.*;
+import static com.zy.base.starter.constants.UserConstant.*;
 
 /**
  * JWT 工具类

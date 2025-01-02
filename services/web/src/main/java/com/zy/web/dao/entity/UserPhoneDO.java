@@ -3,7 +3,7 @@
 package com.zy.web.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.zy.database.base.BaseDO;
+import com.zy.database.starter.base.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

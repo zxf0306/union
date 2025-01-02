@@ -1,9 +1,8 @@
 package com.zy.web.controller;
 
-import com.zy.distributeId.toolkit.SnowflakeIdUtil;
-import com.zy.web.dao.entity.UserDO;
+import com.zy.distributeId.starter.toolkit.SnowflakeIdUtil;
+import com.zy.log.starter.annotation.ILog;
 import com.zy.web.dao.mapper.UserMapper;
-import org.redisson.api.RBloomFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +16,7 @@ public class TestController {
 //    @Autowired
 //    private RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
 
+    @ILog
     @GetMapping("/echo/{name}")
     public String sayHello(@PathVariable("name") String name) {
 //        userRegisterCachePenetrationBloomFilter.add("1");

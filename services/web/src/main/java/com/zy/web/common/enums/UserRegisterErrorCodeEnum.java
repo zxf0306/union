@@ -1,6 +1,6 @@
 package com.zy.web.common.enums;
 
-import com.zy.convention.errorcode.IErrorCode;
+import com.zy.convention.starter.errorcode.IErrorCode;
 import lombok.AllArgsConstructor;
 
 /**

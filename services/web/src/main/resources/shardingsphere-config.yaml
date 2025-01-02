@@ -67,13 +67,13 @@ rules:
           sharding-count: 32
           table-sharding-count: 16
           strategy: standard
-          algorithmClassName: com.zy.database.algorithm.sharding.CustomDbHashModShardingAlgorithm
+          algorithmClassName: com.zy.database.starter.algorithm.sharding.CustomDbHashModShardingAlgorithm
       user_table_hash_mod:
         type: CLASS_BASED
         props:
           sharding-count: 32
           table-sharding-count: 16
           strategy: standard
-          algorithmClassName: com.zy.database.algorithm.sharding.CustomTableHashModShardingAlgorithm
+          algorithmClassName: com.zy.database.starter.algorithm.sharding.CustomTableHashModShardingAlgorithm
 props:
   sql-show: true

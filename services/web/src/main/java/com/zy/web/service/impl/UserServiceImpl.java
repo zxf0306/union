@@ -2,8 +2,8 @@ package com.zy.web.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.zy.common.toolkit.BeanUtil;
-import com.zy.convention.exception.ClientException;
+import com.zy.common.starter.toolkit.BeanUtil;
+import com.zy.convention.starter.exception.ClientException;
 import com.zy.web.dao.entity.UserDO;
 import com.zy.web.dao.entity.UserDeletionDO;
 import com.zy.web.dao.mapper.UserDeletionMapper;

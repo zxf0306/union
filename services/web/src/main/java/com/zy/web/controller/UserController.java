@@ -1,12 +1,12 @@
 package com.zy.web.controller;
 
-import com.zy.convention.result.Result;
+import com.zy.convention.starter.result.Result;
 import com.zy.web.dto.req.UserRegisterReqDTO;
 import com.zy.web.dto.resp.UserQueryRespDTO;
 import com.zy.web.dto.resp.UserRegisterRespDTO;
 import com.zy.web.service.UserService;
 import com.zy.web.service.UserLoginService;
-import com.zy.webs.Results;
+import com.zy.webs.starter.Results;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;

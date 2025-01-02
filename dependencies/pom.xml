@@ -75,7 +75,11 @@
                 <version>${mybatis-spring-boot-starter.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>

@@ -1,6 +1,6 @@
 package com.zy.web.service.handler.filter.user;
 
-import com.zy.convention.exception.ClientException;
+import com.zy.convention.starter.exception.ClientException;
 import com.zy.web.common.enums.UserRegisterErrorCodeEnum;
 import com.zy.web.dto.req.UserRegisterReqDTO;
 import com.zy.web.service.UserLoginService;

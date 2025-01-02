@@ -1,7 +1,7 @@
 package com.zy.gateway.filter;
 
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
-import com.zy.base.starters.constants.UserConstant;
+import com.zy.base.starter.constants.UserConstant;
 import com.zy.gateway.config.Config;
 import com.zy.gateway.toolkits.JWTUtil;
 import com.zy.gateway.toolkits.UserInfoDTO;

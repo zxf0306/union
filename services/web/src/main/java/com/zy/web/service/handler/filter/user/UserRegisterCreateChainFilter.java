@@ -1,6 +1,6 @@
 package com.zy.web.service.handler.filter.user;
 
-import com.zy.pattern.starters.chain.AbstractChainHandler;
+import com.zy.pattern.starter.chain.AbstractChainHandler;
 import com.zy.web.common.enums.UserChainMarkEnum;
 import com.zy.web.dto.req.UserRegisterReqDTO;
 
