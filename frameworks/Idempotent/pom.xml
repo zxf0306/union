@@ -55,11 +55,11 @@
             <artifactId>frameworks-convention-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.zy</groupId>-->
-<!--            <artifactId>frameworks-user-spring-boot-starter</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.zy</groupId>
+            <artifactId>frameworks-user-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.zy</groupId>
