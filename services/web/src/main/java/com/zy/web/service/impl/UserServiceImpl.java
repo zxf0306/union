@@ -57,6 +57,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
-
+        System.out.println("1");
     }
 }

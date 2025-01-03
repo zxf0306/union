@@ -1,23 +1,28 @@
 package com.zy.web.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zy.cache.starter.DistributedCache;
 import com.zy.common.starter.toolkit.BeanUtil;
+import com.zy.convention.starter.exception.ClientException;
 import com.zy.convention.starter.exception.ServiceException;
 import com.zy.pattern.starter.chain.AbstractChainContext;
+import com.zy.starter.user.core.UserContext;
+import com.zy.starter.user.core.UserInfoDTO;
+import com.zy.starter.user.toolkit.JWTUtil;
 import com.zy.web.common.enums.UserChainMarkEnum;
 import com.zy.web.dao.entity.*;
-import com.zy.web.dao.mapper.UserMailMapper;
-import com.zy.web.dao.mapper.UserMapper;
-import com.zy.web.dao.mapper.UserPhoneMapper;
-import com.zy.web.dao.mapper.UserReuseMapper;
+import com.zy.web.dao.mapper.*;
 import com.zy.web.dto.req.UserDeletionReqDTO;
 import com.zy.web.dto.req.UserLoginReqDTO;
 import com.zy.web.dto.req.UserRegisterReqDTO;
 import com.zy.web.dto.resp.UserLoginRespDTO;
+import com.zy.web.dto.resp.UserQueryRespDTO;
 import com.zy.web.dto.resp.UserRegisterRespDTO;
 import com.zy.web.service.UserLoginService;
+import com.zy.web.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBloomFilter;
@@ -28,8 +33,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.zy.web.common.enums.RedisKeyConstant.LOCK_USER_REGISTER;
-import static com.zy.web.common.enums.RedisKeyConstant.USER_REGISTER_REUSE_SHARDING;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static com.zy.web.common.enums.RedisKeyConstant.*;
 import static com.zy.web.common.enums.UserRegisterErrorCodeEnum.*;
 import static com.zy.web.toolkit.UserReuseUtil.hashShardingIdx;
 
@@ -38,10 +46,12 @@ import static com.zy.web.toolkit.UserReuseUtil.hashShardingIdx;
 @RequiredArgsConstructor
 public class UserLoginServiceImpl implements UserLoginService {
 
+    private final UserService userService;
     private final UserMapper userMapper;
     private final UserPhoneMapper userPhoneMapper;
     private final UserReuseMapper userReuseMapper;
     private final UserMailMapper userMailMapper;
+    private final UserDeletionMapper userDeletionMapper;
     private final RedissonClient redissonClient;
     private final DistributedCache distributedCache;
     //责任链context，通过abstractChainContext来调用责任链的执行。
@@ -103,46 +113,46 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Override
     public UserLoginRespDTO login(UserLoginReqDTO requestParam) {
-//        String usernameOrMailOrPhone = requestParam.getUsernameOrMailOrPhone();
-//        boolean mailFlag = false;
-//        // 时间复杂度最佳 O(1)。indexOf or contains 时间复杂度为 O(n)
-//        for (char c : usernameOrMailOrPhone.toCharArray()) {
-//            if (c == '@') {
-//                mailFlag = true;
-//                break;
-//            }
-//        }
-//        String username;
-//        if (mailFlag) {
-//            LambdaQueryWrapper<UserMailDO> queryWrapper = Wrappers.lambdaQuery(UserMailDO.class)
-//                    .eq(UserMailDO::getMail, usernameOrMailOrPhone);
-//            username = Optional.ofNullable(userMailMapper.selectOne(queryWrapper))
-//                    .map(UserMailDO::getUsername)
-//                    .orElseThrow(() -> new ClientException("用户名/手机号/邮箱不存在"));
-//        } else {
-//            LambdaQueryWrapper<UserPhoneDO> queryWrapper = Wrappers.lambdaQuery(UserPhoneDO.class)
-//                    .eq(UserPhoneDO::getPhone, usernameOrMailOrPhone);
-//            username = Optional.ofNullable(userPhoneMapper.selectOne(queryWrapper))
-//                    .map(UserPhoneDO::getUsername)
-//                    .orElse(null);
-//        }
-//        username = Optional.ofNullable(username).orElse(requestParam.getUsernameOrMailOrPhone());
-//        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
-//                .eq(UserDO::getUsername, username)
-//                .eq(UserDO::getPassword, requestParam.getPassword())
-//                .select(UserDO::getId, UserDO::getUsername, UserDO::getRealName);
-//        UserDO userDO = userMapper.selectOne(queryWrapper);
-//        if (userDO != null) {
-//            UserInfoDTO userInfo = UserInfoDTO.builder()
-//                    .userId(String.valueOf(userDO.getId()))
-//                    .username(userDO.getUsername())
-//                    .realName(userDO.getRealName())
-//                    .build();
-//            String accessToken = JWTUtil.generateAccessToken(userInfo);
-//            UserLoginRespDTO actual = new UserLoginRespDTO(userInfo.getUserId(), requestParam.getUsernameOrMailOrPhone(), userDO.getRealName(), accessToken);
-//            distributedCache.put(accessToken, JSON.toJSONString(actual), 30, TimeUnit.MINUTES);
-//            return actual;
-//        }
+        String usernameOrMailOrPhone = requestParam.getUsernameOrMailOrPhone();
+        boolean mailFlag = false;
+        // 时间复杂度最佳 O(1)。indexOf or contains 时间复杂度为 O(n)
+        for (char c : usernameOrMailOrPhone.toCharArray()) {
+            if (c == '@') {
+                mailFlag = true;
+                break;
+            }
+        }
+        String username;
+        if (mailFlag) {
+            LambdaQueryWrapper<UserMailDO> queryWrapper = Wrappers.lambdaQuery(UserMailDO.class)
+                    .eq(UserMailDO::getMail, usernameOrMailOrPhone);
+            username = Optional.ofNullable(userMailMapper.selectOne(queryWrapper))
+                    .map(UserMailDO::getUsername)
+                    .orElseThrow(() -> new ClientException("用户名/手机号/邮箱不存在"));
+        } else {
+            LambdaQueryWrapper<UserPhoneDO> queryWrapper = Wrappers.lambdaQuery(UserPhoneDO.class)
+                    .eq(UserPhoneDO::getPhone, usernameOrMailOrPhone);
+            username = Optional.ofNullable(userPhoneMapper.selectOne(queryWrapper))
+                    .map(UserPhoneDO::getUsername)
+                    .orElse(null);
+        }
+        username = Optional.ofNullable(username).orElse(requestParam.getUsernameOrMailOrPhone());
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username)
+                .eq(UserDO::getPassword, requestParam.getPassword())
+                .select(UserDO::getId, UserDO::getUsername, UserDO::getRealName);
+        UserDO userDO = userMapper.selectOne(queryWrapper);
+        if (userDO != null) {
+            UserInfoDTO userInfo = UserInfoDTO.builder()
+                    .userId(String.valueOf(userDO.getId()))
+                    .username(userDO.getUsername())
+                    .realName(userDO.getRealName())
+                    .build();
+            String accessToken = JWTUtil.generateAccessToken(userInfo);
+            UserLoginRespDTO actual = new UserLoginRespDTO(userInfo.getUserId(), requestParam.getUsernameOrMailOrPhone(), userDO.getRealName(), accessToken);
+            distributedCache.put(accessToken, JSON.toJSONString(actual), 30, TimeUnit.MINUTES);
+            return actual;
+        }
         throw new ServiceException("账号不存在或密码错误");
     }
 
@@ -224,44 +234,44 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deletion(UserDeletionReqDTO requestParam) {
-//        String username = UserContext.getUsername();
-//        if (!Objects.equals(username, requestParam.getUsername())) {
-//            // 此处严谨来说，需要上报风控中心进行异常检测
-//            throw new ClientException("注销账号与登录账号不一致");
-//        }
-//        RLock lock = redissonClient.getLock(USER_DELETION + requestParam.getUsername());
+        String username = UserContext.getUsername();
+        if (!Objects.equals(username, requestParam.getUsername())) {
+            // 此处严谨来说，需要上报风控中心进行异常检测
+            throw new ClientException("注销账号与登录账号不一致");
+        }
+        RLock lock = redissonClient.getLock(USER_DELETION + requestParam.getUsername());
 //        // 加锁为什么放在 try 语句外？https://www.yuque.com/magestack/12306/pu52u29i6eb1c5wh
-//        lock.lock();
-//        try {
-//            UserQueryRespDTO userQueryRespDTO = userService.queryUserByUsername(username);
-//            UserDeletionDO userDeletionDO = UserDeletionDO.builder()
-//                    .idType(userQueryRespDTO.getIdType())
-//                    .idCard(userQueryRespDTO.getIdCard())
-//                    .build();
-//            userDeletionMapper.insert(userDeletionDO);
-//            UserDO userDO = new UserDO();
-//            userDO.setDeletionTime(System.currentTimeMillis());
-//            userDO.setUsername(username);
-//            // MyBatis Plus 不支持修改语句变更 del_flag 字段
-//            userMapper.deletionUser(userDO);
-//            UserPhoneDO userPhoneDO = UserPhoneDO.builder()
-//                    .phone(userQueryRespDTO.getPhone())
-//                    .deletionTime(System.currentTimeMillis())
-//                    .build();
-//            userPhoneMapper.deletionUser(userPhoneDO);
-//            if (StrUtil.isNotBlank(userQueryRespDTO.getMail())) {
-//                UserMailDO userMailDO = UserMailDO.builder()
-//                        .mail(userQueryRespDTO.getMail())
-//                        .deletionTime(System.currentTimeMillis())
-//                        .build();
-//                userMailMapper.deletionUser(userMailDO);
-//            }
-//            distributedCache.delete(UserContext.getToken());
-//            userReuseMapper.insert(new UserReuseDO(username));
-//            StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
-//            instance.opsForSet().add(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
-//        } finally {
-//            lock.unlock();
-//        }
+        lock.lock();
+        try {
+            UserQueryRespDTO userQueryRespDTO = userService.queryUserByUsername(username);
+            UserDeletionDO userDeletionDO = UserDeletionDO.builder()
+                    .idType(userQueryRespDTO.getIdType())
+                    .idCard(userQueryRespDTO.getIdCard())
+                    .build();
+            userDeletionMapper.insert(userDeletionDO);
+            UserDO userDO = new UserDO();
+            userDO.setDeletionTime(System.currentTimeMillis());
+            userDO.setUsername(username);
+            // MyBatis Plus 不支持修改语句变更 del_flag 字段
+            userMapper.deletionUser(userDO);
+            UserPhoneDO userPhoneDO = UserPhoneDO.builder()
+                    .phone(userQueryRespDTO.getPhone())
+                    .deletionTime(System.currentTimeMillis())
+                    .build();
+            userPhoneMapper.deletionUser(userPhoneDO);
+            if (StrUtil.isNotBlank(userQueryRespDTO.getMail())) {
+                UserMailDO userMailDO = UserMailDO.builder()
+                        .mail(userQueryRespDTO.getMail())
+                        .deletionTime(System.currentTimeMillis())
+                        .build();
+                userMailMapper.deletionUser(userMailDO);
+            }
+            distributedCache.delete(UserContext.getToken());
+            userReuseMapper.insert(new UserReuseDO(username));
+            StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
+            instance.opsForSet().add(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
+        } finally {
+            lock.unlock();
+        }
     }
 }
