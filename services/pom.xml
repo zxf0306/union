@@ -15,9 +15,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>web</module>
+        <module>web-service</module>
         <module>gateway</module>
         <module>api</module>
+        <module>ticket-service</module>
     </modules>
 
     <build>

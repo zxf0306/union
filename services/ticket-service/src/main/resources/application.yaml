@@ -1,0 +1,11 @@
+server:
+  port: 9002
+spring:
+  application:
+    name: union-ticket
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 107.151.246.100:8848
+      password: nacos
+      username: nacos

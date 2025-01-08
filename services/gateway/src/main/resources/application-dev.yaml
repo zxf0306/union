@@ -15,8 +15,8 @@ spring:
                   - /api/user-service/logout
                   - /api/user-service/deletion
 
-        - id: index12306-ticket-service
-          uri: lb://index12306-ticket${unique-name:}-service/api/ticket-service/**
+        - id:  union-ticket-service-route
+          uri: lb://union-ticket${unique-name:}/api/ticket-service/**
           predicates:
             - Path=/api/ticket-service/**
           filters:
