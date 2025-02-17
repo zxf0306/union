@@ -1,6 +1,9 @@
 package com.zy.web.controller;
 
 import com.zy.convention.starter.result.Result;
+import com.zy.starter.idempotent.annotation.Idempotent;
+import com.zy.starter.idempotent.enums.IdempotentSceneEnum;
+import com.zy.starter.idempotent.enums.IdempotentTypeEnum;
 import com.zy.web.dto.req.UserDeletionReqDTO;
 import com.zy.web.dto.req.UserUpdateReqDTO;
 import com.zy.web.dto.resp.UserQueryRespDTO;
@@ -26,7 +29,19 @@ public class UserInfoController {
      * 根据用户名查询用户信息
      */
     @GetMapping("/api/user-service/query")
+    @Idempotent(
+            uniqueKeyPrefix = "index12306-user:lock_passenger-alter:",
+            key = "T(com.zy.starter.user.core.UserContext).getUsername()",
+            type = IdempotentTypeEnum.SPEL,
+            scene = IdempotentSceneEnum.RESTAPI,
+            message = "测试中，请稍后再试..."
+    )
     public Result<UserQueryRespDTO> queryUserByUsername(@RequestParam("username") @NotEmpty String username) {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return Results.success(userService.queryUserByUsername(username));
     }
 

@@ -84,8 +84,13 @@
         <dependency>
             <groupId>com.zy</groupId>
             <artifactId>frameworks-user-spring-boot-starter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zy</groupId>
+            <artifactId>frameworks-idempotent-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

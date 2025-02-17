@@ -170,11 +170,11 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Override
     public Boolean hasUsername(String username) {
-//        boolean hasUsername = userRegisterCachePenetrationBloomFilter.contains(username);
-//        if (hasUsername) {
-//            StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
-//            return instance.opsForSet().isMember(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
-//        }
+        boolean hasUsername = userRegisterCachePenetrationBloomFilter.contains(username);
+        if (hasUsername) {
+            StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
+            return instance.opsForSet().isMember(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
+        }
         return true;
     }
 
